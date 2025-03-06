@@ -6,7 +6,7 @@ class LayerDense:
         # Initialize weights and biases
         self.weights = 0.01 * np.random.randn(n_inputs, n_neurons) # Randomly assign weights with small values
         self.biases = np.zeros((1, n_neurons))
-        
+
         # Set regularization strength
         self.weight_regularizer_l1 = weight_regularizer_l1
         self.weight_regularizer_l2 = weight_regularizer_l2
@@ -23,5 +23,20 @@ class LayerDense:
         # Gradients on parameters
         self.dweights = np.dot(inputs.T, dvalues)
         self.dbiases = np.sum(dvalues, axis=0, keepdims=True)
+
+        # Gradients on regularization
+        # L1 on weights
+        if self.weight_regularizer_l1 > 0:
+            self.dweights += self.weight_regularizer_l1 * np.sign(self.weights)
+        # L2 on weights
+        if self.weight_regularizer_l2 > 0:
+            self.dweights += 2 * self.weight_regularizer_l2 * self.weights
+        # L1 on biases
+        if self.bias_regularizer_l1 > 0:
+            self.dbiases += self.bias_regularizer_l1 * np.sign(self.biases)
+        # L2 on biases
+        if self.bias_regularizer_l2 > 0:
+            self.dbiases += 2 * self.bias_regularizer_l2 * self.biases
+
         # Gradient on values
         self.dvalues = np.dot(dvalues, self.weights.T)
